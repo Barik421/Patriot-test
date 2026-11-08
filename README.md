@@ -30,6 +30,8 @@ All Vite values are public build-time configuration, never secrets. With no site
 
 ## Content and scoring
 
+[Review all 120 questions and answer options](docs/questions-review.md).
+
 `src/data/questions.ts` contains 120 original questions, each with four answers. Editorial columns represent the four archetypes. Each answer carries an immutable score vector, independent of its shuffled display position:
 
 | Archetype      | Patriot | Almost patriot | Almost zrada | Zrada |

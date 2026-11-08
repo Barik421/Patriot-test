@@ -427,27 +427,6 @@ nav {
   font-weight: 850;
   font-size: 19px;
 }
-.art-sticker {
-  position: absolute;
-  bottom: 45px;
-  left: 19px;
-  z-index: 2;
-  background: #3451f0;
-  color: #fff;
-  padding: 14px 18px;
-  transform: rotate(-8deg);
-  border-radius: 8px;
-  font-size: 26px;
-  line-height: 1.1;
-  font-weight: 850;
-  box-shadow: 0 8px 20px #3451f025;
-}
-.art-sticker span {
-  display: block;
-  font-size: 7px;
-  letter-spacing: 1px;
-  margin-top: 5px;
-}
 .art-bottom {
   position: absolute;
   bottom: -3px;
@@ -582,16 +561,6 @@ h2 {
   margin-top: 18px;
   padding-top: 12px;
   opacity: 0.7;
-}
-.types-footnote {
-  font-size: 10px;
-  color: var(--muted);
-  text-align: center;
-  margin-top: 23px;
-  line-height: 1.7;
-}
-.types-footnote span {
-  margin-left: 3px;
 }
 .how-section {
   border-top: 1px solid var(--line);
@@ -1050,10 +1019,6 @@ h2 {
   font-size: 18px;
   font-weight: 850;
 }
-.score-dot {
-  color: var(--muted);
-  margin-inline: 2px;
-}
 .result-share-panel {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1430,10 +1395,6 @@ h2 {
     font-size: 8px;
     letter-spacing: 1px;
   }
-  .art-sticker {
-    bottom: 46px;
-    font-size: 23px;
-  }
   .art-bottom {
     font-size: 9px;
   }
@@ -1541,10 +1502,6 @@ h2 {
   }
   .art-label {
     top: 0;
-  }
-  .art-sticker {
-    bottom: 48px;
-    left: 25px;
   }
   .versus {
     top: 199px;
@@ -1820,15 +1777,6 @@ h2 {
     top: 0;
     letter-spacing: 1.1px;
   }
-  .art-sticker {
-    font-size: 21px;
-    padding: 11px 14px;
-    bottom: 41px;
-    left: 12px;
-  }
-  .art-sticker span {
-    font-size: 6px;
-  }
   .versus {
     width: 46px;
     height: 46px;
@@ -1900,11 +1848,6 @@ h2 {
   }
   .type-number {
     font-size: 9px;
-  }
-  .types-footnote {
-    font-size: 9px;
-    max-width: 280px;
-    margin-inline: auto;
   }
   .how-intro h2 {
     font-size: 34px;
@@ -2156,10 +2099,6 @@ h2 {
   background: #ffffff85;
   border-color: #00000018;
   color: var(--result-ink);
-}
-.result-intro .score-dot {
-  color: inherit;
-  opacity: 0.5;
 }
 .result-intro h1 > span {
   color: var(--result-ink);
