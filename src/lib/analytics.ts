@@ -15,9 +15,11 @@ declare global {
   }
 }
 const id = import.meta.env?.VITE_GA_MEASUREMENT_ID || "";
+const containerId = import.meta.env?.VITE_GTM_CONTAINER_ID || "";
+const useGtm = /^GTM-[A-Z0-9]+$/.test(containerId);
 let loaded = false;
 export function analyticsAvailable() {
-  return /^G-[A-Z0-9]+$/.test(id);
+  return useGtm || /^G-[A-Z0-9]+$/.test(id);
 }
 export function consent() {
   return readStorage("consent");
@@ -41,6 +43,15 @@ export function initializeAnalytics() {
     ad_user_data: "denied",
     ad_personalization: "denied",
   });
+  if (useGtm) {
+    window.dataLayer.push({ "gtm.start": Date.now(), event: "gtm.js" });
+    const script = document.createElement("script");
+    script.id = "patriot-gtm";
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(containerId)}`;
+    document.head.append(script);
+    return;
+  }
   window.gtag("js", new Date());
   window.gtag("config", id, {
     send_page_view: false,
@@ -71,6 +82,8 @@ export function setConsent(allowed: boolean) {
         document.cookie = `${name}=; Max-Age=0; Path=/; SameSite=Lax`;
       }
     });
+    // Reload to unload container tags when permission is withdrawn.
+    if (useGtm && loaded) window.location.reload();
   }
 }
 export function track(
@@ -84,9 +97,11 @@ export function track(
   )
     return;
   initializeAnalytics();
-  window.gtag?.("event", name, {
+  const safeParams = {
     ...params,
     page_location: `${location.origin}${import.meta.env?.BASE_URL || "/"}`,
     page_title: "Тест на патріота",
-  });
+  };
+  if (useGtm) window.dataLayer?.push({ event: name, ...safeParams });
+  else window.gtag?.("event", name, safeParams);
 }

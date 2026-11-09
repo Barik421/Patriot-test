@@ -63,7 +63,16 @@ export function FaqItem({
         {question}
         <span aria-hidden="true">+</span>
       </summary>
-      <p>{answer}</p>
+      <p>
+        {answer.split("mbrnvwork@gmail.com").map((part, index) => (
+          <span key={index}>
+            {index > 0 && (
+              <a href="mailto:mbrnvwork@gmail.com">mbrnvwork@gmail.com</a>
+            )}
+            {part}
+          </span>
+        ))}
+      </p>
     </details>
   );
 }
