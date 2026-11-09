@@ -31,6 +31,11 @@ for (const path of pages) {
   for (const match of html.matchAll(
     /(?:src|href)="([^"]*\/assets\/[^"?#]+)"/g,
   )) {
+    if (canonical)
+      assert(
+        match[1].startsWith(`${new URL(canonicals[0]).pathname}assets/`),
+        `Asset path must match the public site base: ${match[1]}`,
+      );
     assert(
       match[1].startsWith("/"),
       `Absolute asset path on nested page: ${path}`,
