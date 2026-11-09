@@ -26,7 +26,9 @@ npm run preview
 | `VITE_GA_MEASUREMENT_ID`        | Optional real `G-...` GA4 ID. Analytics is disabled when absent/invalid.                           |
 | `VITE_GOOGLE_SITE_VERIFICATION` | Optional Search Console HTML verification token.                                                   |
 
-All Vite values are public build-time configuration, never secrets. With no site URL the build deliberately emits `noindex` and a disallowing robots.txt; set the real URL before public launch. Share links use the configured URL or current origin/base path locally.
+All Vite values are public build-time configuration, never secrets. The `/how-it-works/` page is a separate prerendered, indexable document with its own title, description and canonical. Legacy `#how` links redirect to this path. Tracking query parameters keep the canonical URL and do not trigger noindex.
+
+With no site URL the build deliberately emits `noindex` and a disallowing robots.txt; set the real URL before public launch. Share links use the configured URL or current origin/base path locally.
 
 ## Content and scoring
 
@@ -65,7 +67,7 @@ The workflow runs type checking, lint, tests, production build and static preren
 
 ## SEO and Search Console
 
-Build-time SSR places the full Ukrainian homepage, result previews, explanatory content and FAQ in the initial HTML. It includes title/description, canonical and OG URL/image when configured, Twitter cards, FAQPage/WebApplication structured data, lang=uk, favicon, robots.txt and a one-URL sitemap. The fixed social preview is `public/og-card.png`. Client quiz/result states and parameterized URLs receive noindex; the canonical always points to the homepage. Hash results do not create new server paths. Social crawlers see the generic site preview, not a personalized result; use PNGs for personalized previews.
+Build-time SSR places the full Ukrainian homepage, result previews, explanatory content and FAQ in the initial HTML. It includes title/description, canonical and OG URL/image when configured, Twitter cards, FAQPage/WebApplication structured data, lang=uk, favicon, robots.txt and a two-URL sitemap. The fixed social preview is `public/og-card.png`. Client quiz/result states receive noindex; tracking parameters are handled by canonical URLs; the canonical always points to the homepage. Hash results do not create new server paths. `npm run check:seo` validates both public HTML pages and their metadata/sitemap after each CI build. On repository Pages the `/Patriot-test/robots.txt` file is below the host root, so submit the sitemap directly in Search Console; do not rely on this file for host-level crawl rules. Social crawlers see the generic site preview, not a personalized result; use PNGs for personalized previews.
 
 Set the real site URL, add the actual Search Console token via `VITE_GOOGLE_SITE_VERIFICATION` (or use DNS verification), rebuild, verify ownership and submit `<actual site URL>sitemap.xml`. FAQ markup describes visible content and does not guarantee rich results.
 

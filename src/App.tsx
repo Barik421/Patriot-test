@@ -1,3 +1,4 @@
+import { isHowPath, publicPaths } from "./lib/paths";
 import { HowItWorks } from "./HowItWorks";
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
@@ -37,29 +38,39 @@ function restoredSession(): Session | null {
     return null;
   }
 }
-function initial() {
+function initial(
+  staticPage?: "home" | "how",
+  base = import.meta.env?.BASE_URL || "/",
+) {
   const session = restoredSession();
   const result =
     typeof location !== "undefined" ? parseResult(location.hash) : null;
   return {
     session,
     result,
-    view: (result
-      ? "result"
-      : typeof location !== "undefined" && location.hash === "#how"
-        ? "how"
+    view: (staticPage
+      ? staticPage
+      : result
+        ? "result"
         : typeof location !== "undefined" &&
-            location.hash === "#quiz" &&
-            session
-          ? "quiz"
-          : "home") as View,
+            (location.hash === "#how" || isHowPath(location.pathname, base))
+          ? "how"
+          : typeof location !== "undefined" &&
+              location.hash === "#quiz" &&
+              session
+            ? "quiz"
+            : "home") as View,
   };
 }
 function scrollTop() {
   window.scrollTo({ top: 0, behavior: "instant" });
 }
-export default function App() {
-  const [state, setState] = useState(initial),
+export default function App({
+  staticPage,
+  basePath = import.meta.env?.BASE_URL || "/",
+}: { staticPage?: "home" | "how"; basePath?: string } = {}) {
+  const paths = publicPaths(basePath);
+  const [state, setState] = useState(() => initial(staticPage, basePath)),
     { session, result, view } = state;
   const [dark, setDark] = useState(
     () =>
@@ -83,16 +94,24 @@ export default function App() {
   const originalTitle = "Патріот чи зрадойоб? — Тест на патріота України";
   useEffect(() => {
     initializeAnalytics();
+    if (location.hash === "#how") {
+      location.replace(publicPaths(basePath).how);
+      return;
+    }
     const onHash = () => {
       if (location.hash === "#main") return;
-      const next = initial();
+      if (location.hash === "#how") {
+        location.assign(publicPaths(basePath).how);
+        return;
+      }
+      const next = initial(undefined, basePath);
       setState(next);
       setManualLink(false);
       if (location.hash !== "#faq") scrollTop();
     };
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
-  }, []);
+  }, [basePath]);
   useEffect(() => {
     if (view === "home" && location.hash === "#faq") {
       document.getElementById("faq")?.scrollIntoView({ behavior: "instant" });
@@ -121,12 +140,11 @@ export default function App() {
       view === "result" && result
         ? `${results[result.category].name} — Тест на патріота`
         : view === "how"
-          ? "Як це працює — Тест на патріота"
+          ? "Як працює тест на патріота — правила, результати й поширення"
           : originalTitle;
     let robots = document.querySelector<HTMLMetaElement>('meta[name="robots"]');
     if (
-      view !== "home" ||
-      location.search ||
+      (view !== "home" && view !== "how") ||
       location.hash === "#quiz" ||
       location.hash.startsWith("#result=")
     ) {
@@ -165,14 +183,22 @@ export default function App() {
   const start = (restart = false) => {
     const next = newSession(questions);
     save(next);
-    history.pushState(null, "", "#quiz");
     track(restart ? "quiz_restart" : "quiz_start");
+    if (view === "how") {
+      location.assign(`${paths.home}#quiz`);
+      return;
+    }
+    history.pushState(null, "", `${paths.home}#quiz`);
     scrollTop();
     setManualLink(false);
   };
   const home = () => {
+    if (view === "how") {
+      location.assign(paths.home);
+      return;
+    }
     setState((s) => ({ ...s, view: "home", result: null }));
-    history.pushState(null, "", `${location.pathname}${location.search}`);
+    history.pushState(null, "", paths.home);
     scrollTop();
   };
   const resume = () => {
@@ -307,6 +333,7 @@ export default function App() {
         dark={dark}
         onTheme={toggleTheme}
         onHome={home}
+        basePath={paths.home}
         inQuiz={view === "quiz" || view === "loading" || view === "result"}
       />
       {view === "how" && (
@@ -564,7 +591,7 @@ export default function App() {
           </div>
         </main>
       )}
-      <Footer onPrivacy={() => setPrivacy(true)} />
+      <Footer onPrivacy={() => setPrivacy(true)} basePath={paths.home} />
       <div className="toast" role="status" aria-live="polite">
         {toast && <span>{toast}</span>}
       </div>

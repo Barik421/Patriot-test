@@ -33,11 +33,7 @@
       } catch {
         document.documentElement.dataset.theme = "light";
       }
-      if (
-        location.search ||
-        location.hash === "#quiz" ||
-        location.hash.startsWith("#result=")
-      ) {
+      if (location.hash === "#quiz" || location.hash.startsWith("#result=")) {
         const m = document.createElement("meta");
         m.name = "robots";
         m.content = "noindex,follow";

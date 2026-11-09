@@ -85,16 +85,18 @@ export function Header({
   onTheme,
   onHome,
   inQuiz = false,
+  basePath = "/",
 }: {
   dark: boolean;
   onTheme: () => void;
   onHome: () => void;
   inQuiz?: boolean;
+  basePath?: string;
 }) {
   return (
     <header className="header shell">
       <a
-        href="#"
+        href={basePath}
         onClick={(e) => {
           e.preventDefault();
           onHome();
@@ -112,7 +114,7 @@ export function Header({
         </span>
       </a>
       <nav aria-label="Головна навігація">
-        {!inQuiz && <a href="#how">Як це працює</a>}
+        {!inQuiz && <a href={`${basePath}how-it-works/`}>Як це працює</a>}
         <span className="header-note">Потужний тест для незламних людей</span>
         <button
           className="icon-button"
@@ -360,7 +362,13 @@ export function Home({
     </main>
   );
 }
-export function Footer({ onPrivacy }: { onPrivacy: () => void }) {
+export function Footer({
+  onPrivacy,
+  basePath = "/",
+}: {
+  onPrivacy: () => void;
+  basePath?: string;
+}) {
   return (
     <footer className="footer shell">
       <p>
@@ -368,8 +376,8 @@ export function Footer({ onPrivacy }: { onPrivacy: () => void }) {
       </p>
       <span>© {new Date().getFullYear()} Тест на патріота</span>
       <button onClick={onPrivacy}>Приватність</button>
-      <a href="#how">Як це працює</a>
-      <a href="#faq">Питання й відповіді</a>
+      <a href={`${basePath}how-it-works/`}>Як це працює</a>
+      <a href={`${basePath}#faq`}>Питання й відповіді</a>
     </footer>
   );
 }

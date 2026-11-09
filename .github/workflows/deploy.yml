@@ -36,6 +36,7 @@ jobs:
           VITE_SITE_URL: ${{ vars.VITE_SITE_URL || steps.pages.outputs.base_url && format('{0}/', steps.pages.outputs.base_url) || '' }}
           VITE_GA_MEASUREMENT_ID: ${{ vars.VITE_GA_MEASUREMENT_ID }}
           VITE_GOOGLE_SITE_VERIFICATION: ${{ vars.VITE_GOOGLE_SITE_VERIFICATION }}
+      - run: npm run check:seo
       - uses: actions/upload-pages-artifact@v3
         if: github.event_name != 'pull_request'
         with:
