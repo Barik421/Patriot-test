@@ -74,8 +74,12 @@ export function Mark() {
   return (
     <svg viewBox="0 0 40 40" aria-hidden="true">
       <path
-        d="M17 2h6v11l8-8 4 4-8 8h11v6H27l8 8-4 4-8-8v11h-6V27l-8 8-4-4 8-8H2v-6h11L5 9l4-4 8 8Z"
-        fill="currentColor"
+        d="M12 0h16a12 12 0 0 1 12 12v8H0v-8A12 12 0 0 1 12 0Z"
+        fill="#0057b7"
+      />
+      <path
+        d="M0 20h40v8a12 12 0 0 1-12 12H12A12 12 0 0 1 0 28Z"
+        fill="#ffd700"
       />
     </svg>
   );
