@@ -76,7 +76,7 @@ export const results: Record<Category, ResultInfo> = {
   zrada: {
     name: "Зрадойоб",
     eyebrow: "Сертифікований «я ж казав»",
-    emoji: "😈",
+    emoji: "😠",
     extras: ["🚨", "🌪️", "🔥", "🙃"],
     color: "#ff826f",
     ink: "#461b1a",

@@ -1,3 +1,4 @@
+import { FaqItem } from "./FaqItem";
 import { faqs } from "./data/faq";
 import type { CSSProperties } from "react";
 import { categories } from "./lib/quiz";
@@ -230,10 +231,9 @@ export function Home({
       </section>
       <div className="ticker" aria-hidden="true">
         <div>
-          ТРОХИ ЗРАДИ <span>✳</span> ТРОХИ ПЕРЕМОГИ <span>✳</span> БАГАТО
-          САМООІРОНІЇ <span>✳</span> ЦЕ ПРО НАС <span>✳</span> ТРОХИ ЗРАДИ{" "}
-          <span>✳</span> ТРОХИ ПЕРЕМОГИ <span>✳</span> БАГАТО САМООІРОНІЇ{" "}
-          <span>✳</span>
+          ТРОХИ ЗРАДИ <span>✳</span> ТРОХИ ПЕРЕМОГИ <span>✳</span> ТРОХИ САЛА{" "}
+          <span>✳</span> ЦЕ ПРО НАС <span>✳</span> ТРОХИ ЗРАДИ <span>✳</span>{" "}
+          ТРОХИ ПЕРЕМОГИ <span>✳</span> ТРОХИ САЛА <span>✳</span>
         </div>
       </div>
       <section className="types-section shell" id="types">
@@ -349,13 +349,7 @@ export function Home({
         </div>
         <div className="faqs">
           {faqs.map(([q, a]) => (
-            <details key={q}>
-              <summary>
-                {q}
-                <span aria-hidden="true">+</span>
-              </summary>
-              <p>{a}</p>
-            </details>
+            <FaqItem key={q} question={q} answer={a} />
           ))}
         </div>
       </section>
@@ -378,7 +372,7 @@ export function Footer({ onPrivacy }: { onPrivacy: () => void }) {
   return (
     <footer className="footer shell">
       <p>
-        Зроблено з <span>💙</span> та здоровою самоіронією.
+        Зроблено <strong>BRNV</strong> <span>💙</span>
       </p>
       <span>© {new Date().getFullYear()} Тест на патріота</span>
       <button onClick={onPrivacy}>Приватність</button>
