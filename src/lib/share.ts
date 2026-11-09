@@ -53,7 +53,7 @@ export async function resultImage(
   ctx.fillText("✳  ТЕСТ НА ПАТРІОТА", 72, 100);
   ctx.textAlign = "right";
   ctx.font = "600 25px Manrope Variable, sans-serif";
-  ctx.fillText("ЦЕ ЖАРТ. ВИДИХАЙ.", 1008, 100);
+  ctx.fillText("ПАТРІОТ ЧИ ЗРАДОЙОБ?", 1008, 100);
   ctx.textAlign = "left";
   const top = story ? 260 : 95;
   ctx.save();
@@ -91,11 +91,11 @@ export async function resultImage(
   ctx.font = "600 26px Manrope Variable, sans-serif";
   if (story) {
     ctx.fillText("збіг із типажем", 105, panelY + 168);
-    ctx.fillText("100% — не науковий діагноз 🙂", 105, panelY + 225);
+    ctx.fillText(info.slogan, 105, panelY + 225);
   } else {
     ctx.fillText("збіг із типажем", 350, panelY + 58);
     ctx.font = "500 22px Manrope Variable, sans-serif";
-    ctx.fillText("100% — не науковий діагноз", 350, panelY + 94);
+    ctx.fillText(info.slogan, 350, panelY + 94);
   }
   ctx.fillStyle = info.ink;
   ctx.font = "800 33px Manrope Variable, sans-serif";

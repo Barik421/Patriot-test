@@ -223,9 +223,6 @@ export function Home({
             <span className="card-star">↗</span>
           </div>
           <div className="versus">чи?</div>
-          <div className="art-sticker">
-            100%<span>НЕ НАУКОВО</span>
-          </div>
           <span className="art-bottom">
             У кожному з нас живуть обидва. <span>🤝</span>
           </span>
@@ -290,10 +287,6 @@ export function Home({
             );
           })}
         </div>
-        <p className="types-footnote">
-          Жоден результат не робить тебе кращим чи гіршим. Це просто жарт.{" "}
-          <span>🫶</span>
-        </p>
       </section>
       <section className="how-section shell" id="how">
         <div className="how-intro">
@@ -389,7 +382,7 @@ export function Footer({ onPrivacy }: { onPrivacy: () => void }) {
       </p>
       <span>© {new Date().getFullYear()} Тест на патріота</span>
       <button onClick={onPrivacy}>Приватність</button>
-      <a href="#faq">Це точно жарт?</a>
+      <a href="#faq">Питання й відповіді</a>
     </footer>
   );
 }
