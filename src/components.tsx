@@ -230,7 +230,7 @@ export function Home({
       <div className="ticker" aria-hidden="true">
         <div>
           ТРОХИ ЗРАДИ <span>✳</span> ТРОХИ ПЕРЕМОГИ <span>✳</span> ТРОХИ САЛА{" "}
-          <span>✳</span> ЦЕ ПРО НАС <span>✳</span> ТРОХИ ЗРАДИ <span>✳</span>{" "}
+          <span>✳</span> ТРОХИ ЗРАДИ <span>✳</span>{" "}
           ТРОХИ ПЕРЕМОГИ <span>✳</span> ТРОХИ САЛА <span>✳</span>
         </div>
       </div>
