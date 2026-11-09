@@ -401,7 +401,9 @@ export default function App() {
           <div className="loading-mark">
             <Mark />
           </div>
-          <span className="eyebrow muted">НАУКОВІСТЬ: 0%. СТАРАННЯ: 100%.</span>
+          <span className="eyebrow muted">
+            ЗРАДА ЧИ ПЕРЕМОГА? ЗАРАЗ З’ЯСУЄМО.
+          </span>
           <h1 ref={heading} tabIndex={-1} aria-live="polite">
             {
               [
@@ -465,8 +467,6 @@ export default function App() {
               <div className="score-pill">
                 <strong>{result.percent}%</strong>
                 <span>збіг із типажем</span>
-                <span className="score-dot">·</span>
-                <span>100% самоіронії</span>
               </div>
             </div>
             <section
@@ -540,12 +540,6 @@ export default function App() {
               <button className="text-button muted" onClick={home}>
                 На головну
               </button>
-              <p>
-                Це розважальний результат, а не оцінка твоєї любові до України.
-                <br />
-                Посилання на результат можна змінити вручну. Наша наука це
-                переживе.
-              </p>
             </div>
           </div>
         </main>

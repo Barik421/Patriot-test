@@ -12,6 +12,37 @@ import {
 } from "../src/lib/quiz";
 
 describe("editorial database", () => {
+  it("mixes archetypes across editorial letters and invalidates previous content revisions", () => {
+    for (let position = 0; position < 4; position++) {
+      const leaders = new Set(
+        questions.map((q) => {
+          const weights = q.answers[position].weights;
+          return weights.indexOf(Math.max(...weights));
+        }),
+      );
+      expect(leaders.size).toBe(4);
+    }
+    expect(
+      validSession({ ...newSession(questions), version: 1 }, questions),
+    ).toBe(false);
+  });
+  it("treats anti-corruption scrutiny and criticism of officials as constructive attitudes", () => {
+    for (const id of ["q016", "q019", "q021", "q067", "q108"]) {
+      const q = questions.find((q) => q.id === id)!;
+      expect(q.answers.filter((a) => a.weights[0] === 6)).toHaveLength(1);
+    }
+    expect(
+      questions
+        .find((q) => q.id === "q016")!
+        .answers.find((a) => a.text.includes("Читаю докази"))!.weights[0],
+    ).toBe(6);
+    expect(
+      questions
+        .find((q) => q.id === "q067")!
+        .answers.find((a) => a.text.includes("розслідують"))!.weights[0],
+    ).toBe(6);
+  });
+
   it("has 120 unique questions and four distinct valid answers each", () => {
     expect(questions).toHaveLength(120);
     expect(new Set(questions.map((q) => q.id)).size).toBe(120);
@@ -71,7 +102,10 @@ describe("weighted scoring", () => {
     (category) => {
       const i = categories.indexOf(category);
       const s = newSession(questions);
-      s.questionIds.forEach((id) => (s.answers[id] = `a${i}`));
+      s.questionIds.forEach((id) => {
+        const question = questions.find((q) => q.id === id)!;
+        s.answers[id] = question.answers.find((a) => a.weights[i] === 6)!.id;
+      });
       const r = calculateResult(s, questions);
       expect(r.category).toBe(category);
       expect(r.percent).toBe(100);
@@ -81,17 +115,26 @@ describe("weighted scoring", () => {
   );
   it("supports back navigation, answer changes and deterministic ties", () => {
     const s = newSession(questions);
-    s.questionIds.forEach((id, i) => (s.answers[id] = i < 10 ? "a0" : "a1"));
+    s.questionIds.forEach((id, i) => {
+      const question = questions.find((q) => q.id === id)!;
+      s.answers[id] = question.answers.find(
+        (a) => a.weights[i < 10 ? 0 : 1] === 6,
+      )!.id;
+    });
     s.index = 19;
     expect(calculateResult(s, questions).category).toBe("almost-patriot");
     s.index = 4;
-    s.answers[s.questionIds[4]] = "a3";
+    s.answers[s.questionIds[4]] = questions
+      .find((q) => q.id === s.questionIds[4])!
+      .answers.find((a) => a.weights[3] === 6)!.id;
     const restored = JSON.parse(JSON.stringify(s));
     expect(validSession(restored, questions)).toBe(true);
     expect(calculateResult(restored, questions)).toEqual(
       calculateResult(s, questions),
     );
-    s.answers[s.questionIds[4]] = "a0";
+    s.answers[s.questionIds[4]] = questions
+      .find((q) => q.id === s.questionIds[4])!
+      .answers.find((a) => a.weights[0] === 6)!.id;
     expect(calculateResult(s, questions).category).toBe("almost-patriot");
   });
 });

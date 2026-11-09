@@ -30,7 +30,9 @@ All Vite values are public build-time configuration, never secrets. With no site
 
 ## Content and scoring
 
-`src/data/questions.ts` contains 120 original questions, each with four answers. Editorial columns represent the four archetypes. Each answer carries an immutable score vector, independent of its shuffled display position:
+[Review all 120 questions and answer options](docs/questions-review.md).
+
+`src/data/questions.ts` contains 120 original questions, each with four answers. Each answer has an explicit score vector and a stable ID, independent of its mixed editorial position and randomized display position. See [editorial principles](docs/editorial-principles.md) for the distinction between constructive criticism and automatic negativity. Archetype score vectors are:
 
 | Archetype      | Patriot | Almost patriot | Almost zrada | Zrada |
 | -------------- | ------- | -------------- | ------------ | ----- |
@@ -41,7 +43,7 @@ All Vite values are public build-time configuration, never secrets. With no site
 
 Each row totals 9. Fisher–Yates chooses 20 unique questions and separately shuffles the answer IDs. The largest category total wins. Ties deterministically prefer the inner archetypes in this order: almost patriot, almost zrada, patriot, zrada. Affinity percentage is `round(winning total / (20 × 6) × 100)`, **not probability or an actual measure of patriotism**. A stable hash of question/answer IDs selects one of ten descriptions per category. No scores appear during the quiz.
 
-`src/lib/quiz.ts` is pure and tested. Add rows to expand the bank (update the content-count test and editorial copy when the bank size changes). Result palettes, emojis and 40 original descriptions are in `src/data/results.ts`.
+`src/lib/quiz.ts` is pure and tested. Add question objects to expand the bank (update the content-count test and editorial copy when the bank size changes). Result palettes, emojis and 40 original descriptions are in `src/data/results.ts`. Run `npm run questions:review` after content edits to regenerate the full review list. Revision 2 invalidates old sessions because answer IDs now follow mixed editorial positions.
 
 ## Navigation, persistence and sharing
 
@@ -79,4 +81,4 @@ Review your real GA property retention settings and hosting privacy details befo
 
 Native buttons, visible focus, skip link, semantic headings, labeled progress and formats, live status messages and an accessible modal. Answer keys 1–4 supplement normal Tab/Enter/Space navigation. Reduced-motion disables animations/effects; no flashing. Results remain readable without decorative effects. Both themes use dedicated surface, border and text colors.
 
-`npm test` runs 30 checks covering all content, weights, 250 randomized sessions, persistence validation, all categories, ties, answer changes, result URL validation, sharing fallbacks, storage denial, and consent/withdrawal. Browser QA should also cover a full mobile run, refresh/back navigation, all palettes and themes, both PNG sizes, native share/clipboard fallback and reduced motion. Native share and actual GA delivery depend on real device support/configuration and should be verified on target devices.
+`npm test` runs 32 checks covering all content, weights, 250 randomized sessions, persistence validation, all categories, ties, answer changes, result URL validation, sharing fallbacks, storage denial, and consent/withdrawal. Browser QA should also cover a full mobile run, refresh/back navigation, all palettes and themes, both PNG sizes, native share/clipboard fallback and reduced motion. Native share and actual GA delivery depend on real device support/configuration and should be verified on target devices.

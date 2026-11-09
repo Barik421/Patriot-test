@@ -17,7 +17,7 @@ export interface Question {
   answers: Answer[];
 }
 export interface Session {
-  version: 1;
+  version: 2;
   id: string;
   questionIds: string[];
   answerOrders: string[][];
@@ -42,7 +42,7 @@ export function newSession(bank: Question[]): Session {
   if (bank.length < QUIZ_LENGTH) throw new Error("Not enough questions");
   const selected = shuffle(bank).slice(0, QUIZ_LENGTH);
   return {
-    version: 1,
+    version: 2,
     id: globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`,
     questionIds: selected.map((q) => q.id),
     answerOrders: selected.map((q) => shuffle(q.answers.map((a) => a.id))),
@@ -57,7 +57,7 @@ export function validSession(
   if (!value || typeof value !== "object") return false;
   const s = value as Session;
   if (
-    s.version !== 1 ||
+    s.version !== 2 ||
     typeof s.id !== "string" ||
     !Array.isArray(s.questionIds) ||
     s.questionIds.length !== QUIZ_LENGTH ||

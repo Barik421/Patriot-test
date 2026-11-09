@@ -10,7 +10,8 @@
     "typecheck": "tsc -b",
     "lint": "eslint .",
     "test": "vitest run",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "questions:review": "node --import tsx scripts/export-questions.ts"
   },
   "dependencies": {
     "@fontsource-variable/manrope": "^5.2.8",
