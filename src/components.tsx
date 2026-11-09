@@ -167,11 +167,6 @@ export function Home({
             <button className="button primary start-button" onClick={onStart}>
               Пройти тест <Icon name="arrow" size={24} />
             </button>
-            <span className="hand-note">
-              чесно тільки
-              <br />
-              із самим собою <span>↙</span>
-            </span>
           </div>
           {resume !== undefined && (
             <button className="resume-link" onClick={onResume}>
@@ -212,7 +207,7 @@ export function Home({
             <span className="mood-tag">
               <span /> ЗРАДА
             </span>
-            <span className="mood-face">🧐</span>
+            <span className="mood-face">😠</span>
             <span className="mood-caption">
               А де тут
               <br />

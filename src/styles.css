@@ -263,21 +263,6 @@ nav {
   padding-inline: 25px;
   border-radius: 11px;
 }
-.hand-note {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--muted);
-  line-height: 1.6;
-  transform: rotate(-7deg);
-  position: relative;
-}
-.hand-note span {
-  font-size: 25px;
-  position: absolute;
-  left: -17px;
-  bottom: -12px;
-  font-weight: 400;
-}
 .hero-facts {
   display: flex;
   flex-wrap: wrap;
@@ -1720,9 +1705,6 @@ h2 {
     min-width: 185px;
     min-height: 56px;
     font-size: 14px;
-  }
-  .hand-note {
-    font-size: 10px;
   }
   .hero-facts {
     margin-top: 25px;
