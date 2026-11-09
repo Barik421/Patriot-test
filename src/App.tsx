@@ -433,7 +433,7 @@ export default function App() {
               ][loadingStep]
             }
           </h1>
-          <p>Твій внутрішній українець уже на підході.</p>
+          <p>Твій внутрішній стан майже визначено.</p>
           <div className="loading-dots">
             <i />
             <i />

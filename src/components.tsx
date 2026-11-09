@@ -113,7 +113,7 @@ export function Header({
       </a>
       <nav aria-label="Головна навігація">
         {!inQuiz && <a href="#how">Як це працює</a>}
-        <span className="header-note">Трохи правди. Багато самоіронії.</span>
+        <span className="header-note">Потужний тест для незламних людей</span>
         <button
           className="icon-button"
           onClick={onTheme}
@@ -139,7 +139,8 @@ export function Home({
       <section className="hero shell">
         <div className="hero-copy">
           <div className="eyebrow">
-            <span className="live-dot" /> НЕЗАЛЕЖНИЙ ТЕСТ. ЗАЛЕЖНИЙ ВІД МЕМІВ.
+            <span className="live-dot" /> НЕЗАЛЕЖНИЙ ТЕСТ ДЛЯ СИЛЬНИХ ЛЮДЕЙ
+            СИЛЬНОЇ КРАЇНИ
           </div>
           <h1>
             Патріот
@@ -194,7 +195,7 @@ export function Home({
           <span className="art-orbit orbit-one" />
           <span className="art-orbit orbit-two" />
           <span className="small-spark spark-one">✳</span>
-          <span className="art-label">ТВІЙ ВНУТРІШНІЙ УКРАЇНЕЦЬ</span>
+          <span className="art-label">ТВІЙ ВНУТРІШНІЙ СТАН</span>
           <div className="mood-card good">
             <span className="mood-tag">
               <span /> ПЕРЕМОГА
@@ -314,7 +315,7 @@ export function Home({
           <li>
             <span>02</span>
             <div>
-              <h3>Зустрінь свого внутрішнього українця</h3>
+              <h3>Дізнайся свій внутрішній стан</h3>
               <p>
                 Ми змішаємо трохи математики й багато самоіронії. Отримаєш один
                 із чотирьох типажів.
