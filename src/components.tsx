@@ -112,11 +112,7 @@ export function Header({
         </span>
       </a>
       <nav aria-label="Головна навігація">
-        {!inQuiz && (
-          <a href="#how" onClick={onHome}>
-            Як це працює
-          </a>
-        )}
+        {!inQuiz && <a href="#how">Як це працює</a>}
         <span className="header-note">Трохи правди. Багато самоіронії.</span>
         <button
           className="icon-button"
@@ -288,7 +284,7 @@ export function Home({
           })}
         </div>
       </section>
-      <section className="how-section shell" id="how">
+      <section className="how-section shell" id="how-preview">
         <div className="how-intro">
           <span className="eyebrow muted">БЕЗ ІСПИТІВ І КОНСПЕКТІВ</span>
           <h2>
@@ -376,6 +372,7 @@ export function Footer({ onPrivacy }: { onPrivacy: () => void }) {
       </p>
       <span>© {new Date().getFullYear()} Тест на патріота</span>
       <button onClick={onPrivacy}>Приватність</button>
+      <a href="#how">Як це працює</a>
       <a href="#faq">Питання й відповіді</a>
     </footer>
   );

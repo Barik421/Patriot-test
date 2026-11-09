@@ -1,3 +1,4 @@
+import { HowItWorks } from "./HowItWorks";
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { Footer, Header, Home, Icon, Mark } from "./components";
@@ -27,7 +28,7 @@ import {
   shareUrl,
 } from "./lib/share";
 import type { CardFormat } from "./lib/share";
-type View = "home" | "quiz" | "loading" | "result";
+type View = "home" | "how" | "quiz" | "loading" | "result";
 function restoredSession(): Session | null {
   try {
     const data = JSON.parse(readStorage("session") || "null");
@@ -45,9 +46,13 @@ function initial() {
     result,
     view: (result
       ? "result"
-      : typeof location !== "undefined" && location.hash === "#quiz" && session
-        ? "quiz"
-        : "home") as View,
+      : typeof location !== "undefined" && location.hash === "#how"
+        ? "how"
+        : typeof location !== "undefined" &&
+            location.hash === "#quiz" &&
+            session
+          ? "quiz"
+          : "home") as View,
   };
 }
 function scrollTop() {
@@ -79,14 +84,20 @@ export default function App() {
   useEffect(() => {
     initializeAnalytics();
     const onHash = () => {
+      if (location.hash === "#main") return;
       const next = initial();
       setState(next);
       setManualLink(false);
-      scrollTop();
+      if (location.hash !== "#faq") scrollTop();
     };
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
+  useEffect(() => {
+    if (view === "home" && location.hash === "#faq") {
+      document.getElementById("faq")?.scrollIntoView({ behavior: "instant" });
+    }
+  }, [state, view]);
   useEffect(() => {
     if (!toast) return;
     const timer = setTimeout(() => setToast(""), 4500);
@@ -109,7 +120,9 @@ export default function App() {
     document.title =
       view === "result" && result
         ? `${results[result.category].name} — Тест на патріота`
-        : originalTitle;
+        : view === "how"
+          ? "Як це працює — Тест на патріота"
+          : originalTitle;
     let robots = document.querySelector<HTMLMetaElement>('meta[name="robots"]');
     if (
       view !== "home" ||
@@ -294,8 +307,15 @@ export default function App() {
         dark={dark}
         onTheme={toggleTheme}
         onHome={home}
-        inQuiz={view !== "home"}
+        inQuiz={view === "quiz" || view === "loading" || view === "result"}
       />
+      {view === "how" && (
+        <HowItWorks
+          onStart={() => start()}
+          onHome={home}
+          headingRef={heading}
+        />
+      )}
       {view === "home" && (
         <Home
           onStart={() => start()}
