@@ -356,9 +356,6 @@ export default function App({
             <button className="text-button muted" onClick={home}>
               <Icon name="close" size={16} /> Зберегти й вийти
             </button>
-            <span className="quiz-top-note">
-              Жодних правильних відповідей. Тільки твої.
-            </span>
           </div>
           <div className="quiz-content">
             <div className="progress-label">

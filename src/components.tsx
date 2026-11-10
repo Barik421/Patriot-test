@@ -228,10 +228,19 @@ export function Home({
         </div>
       </section>
       <div className="ticker" aria-hidden="true">
-        <div>
-          ТРОХИ ЗРАДИ <span>✳</span> ТРОХИ ПЕРЕМОГИ <span>✳</span> ТРОХИ САЛА{" "}
-          <span>✳</span> ТРОХИ ЗРАДИ <span>✳</span>{" "}
-          ТРОХИ ПЕРЕМОГИ <span>✳</span> ТРОХИ САЛА <span>✳</span>
+        <div className="ticker-track">
+          {[0, 1].map((copy) => (
+            <div className="ticker-group" key={copy}>
+              {Array.from({ length: 3 }, (_, repeat) =>
+                ["ТРОХИ ЗРАДИ", "ТРОХИ ПЕРЕМОГИ", "ТРОХИ САЛА"].map((label) => (
+                  <span className="ticker-item" key={`${repeat}-${label}`}>
+                    {label}
+                    <span className="ticker-separator">✳</span>
+                  </span>
+                )),
+              )}
+            </div>
+          ))}
         </div>
       </div>
       <section className="types-section shell" id="types">

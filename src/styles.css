@@ -436,20 +436,39 @@ nav {
   overflow: hidden;
   padding: 19px 0;
 }
-.ticker > div {
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker-scroll 40s linear infinite;
+  will-change: transform;
+}
+.ticker-group {
+  display: flex;
+  flex: 0 0 auto;
+  min-width: 100vw;
+  align-items: center;
+  justify-content: space-around;
+}
+.ticker-item {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 36px;
+  padding-right: 36px;
   font-size: 13px;
   letter-spacing: 1.8px;
   font-weight: 750;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   white-space: nowrap;
-  gap: 36px;
 }
-.ticker span {
+.ticker-separator {
   color: var(--accent);
   font-size: 22px;
   line-height: 1;
+}
+@keyframes ticker-scroll {
+  to {
+    transform: translateX(-50%);
+  }
 }
 .types-section {
   padding-block: 76px 66px;
@@ -1507,9 +1526,10 @@ h2 {
   .ticker {
     padding: 16px 0;
   }
-  .ticker > div {
+  .ticker-item {
     font-size: 12px;
     gap: 25px;
+    padding-right: 25px;
   }
   .types-section {
     padding-block: 50px;
