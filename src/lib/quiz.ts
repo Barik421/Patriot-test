@@ -16,8 +16,9 @@ export interface Question {
   text: string;
   answers: Answer[];
 }
+const SESSION_VERSION = 3;
 export interface Session {
-  version: 2;
+  version: typeof SESSION_VERSION;
   id: string;
   questionIds: string[];
   answerOrders: string[][];
@@ -29,7 +30,7 @@ export interface Result {
   percent: number;
   variant: number;
 }
-export const QUIZ_LENGTH = 20;
+export const QUIZ_LENGTH = 15;
 export function shuffle<T>(items: readonly T[], rng = Math.random): T[] {
   const copy = [...items];
   for (let i = copy.length - 1; i > 0; i--) {
@@ -42,7 +43,7 @@ export function newSession(bank: Question[]): Session {
   if (bank.length < QUIZ_LENGTH) throw new Error("Not enough questions");
   const selected = shuffle(bank).slice(0, QUIZ_LENGTH);
   return {
-    version: 2,
+    version: SESSION_VERSION,
     id: globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`,
     questionIds: selected.map((q) => q.id),
     answerOrders: selected.map((q) => shuffle(q.answers.map((a) => a.id))),
@@ -57,7 +58,7 @@ export function validSession(
   if (!value || typeof value !== "object") return false;
   const s = value as Session;
   if (
-    s.version !== 2 ||
+    s.version !== SESSION_VERSION ||
     typeof s.id !== "string" ||
     !Array.isArray(s.questionIds) ||
     s.questionIds.length !== QUIZ_LENGTH ||
@@ -78,8 +79,8 @@ export function validSession(
       return (
         !!q &&
         Array.isArray(order) &&
-        order.length === 4 &&
-        new Set(order).size === 4 &&
+        order.length === q.answers.length &&
+        new Set(order).size === q.answers.length &&
         order.every((a) => q.answers.some((x) => x.id === a))
       );
     }) &&
@@ -98,13 +99,14 @@ export function calculateResult(session: Session, bank: Question[]): Result {
   )
     throw new Error("Incomplete quiz");
   const totals = [0, 0, 0, 0];
+  const maximums = [0, 0, 0, 0];
   let hash = 0;
   for (const id of session.questionIds) {
-    const answer = bank
-      .find((q) => q.id === id)!
-      .answers.find((a) => a.id === session.answers[id])!;
+    const question = bank.find((q) => q.id === id)!;
+    const answer = question.answers.find((a) => a.id === session.answers[id])!;
     answer.weights.forEach((w, i) => {
       totals[i] += w;
+      maximums[i] += Math.max(...question.answers.map((a) => a.weights[i]));
     });
     for (const char of id + answer.id)
       hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
@@ -116,7 +118,7 @@ export function calculateResult(session: Session, bank: Question[]): Result {
   );
   return {
     category: categories[winner],
-    percent: Math.round((totals[winner] / (QUIZ_LENGTH * 6)) * 100),
+    percent: Math.round((totals[winner] / maximums[winner]) * 100),
     variant: hash % 10,
   };
 }

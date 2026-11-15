@@ -1,7 +1,7 @@
 import { FaqItem } from "./FaqItem";
 import { faqs } from "./data/faq";
 import type { CSSProperties } from "react";
-import { categories } from "./lib/quiz";
+import { categories, QUIZ_LENGTH } from "./lib/quiz";
 import { results } from "./data/results";
 export function Icon({
   name,
@@ -165,7 +165,7 @@ export function Home({
             <span className="question-dot">?</span>
           </h1>
           <p className="hero-subtitle">
-            Пройди 20 запитань і дізнайся,
+            Пройди {QUIZ_LENGTH} запитань і дізнайся,
             <br className="desktop-br" /> хто ти насправді
             <span className="subtle">. Ну, майже.</span>
           </p>
@@ -176,13 +176,13 @@ export function Home({
           </div>
           {resume !== undefined && (
             <button className="resume-link" onClick={onResume}>
-              Продовжити незавершений тест · {resume}/20{" "}
+              Продовжити незавершений тест · {resume}/{QUIZ_LENGTH}{" "}
               <Icon name="arrow" size={16} />
             </button>
           )}
           <div className="hero-facts">
             <span>
-              <i>20</i> випадкових запитань
+              <i>{QUIZ_LENGTH}</i> випадкових запитань
             </span>
             <span>≈ 5 хвилин</span>
             <span>Без реєстрації</span>
@@ -317,8 +317,8 @@ export function Home({
             <div>
               <h3>Відповідай як відчуваєш</h3>
               <p>
-                20 випадкових запитань із життя. Обирай те, що найближче тобі, а
-                не «як правильно».
+                {QUIZ_LENGTH} випадкових запитань із життя. Обирай те, що
+                найближче тобі, а не «як правильно».
               </p>
             </div>
           </li>

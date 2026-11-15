@@ -7,6 +7,7 @@ import { questions } from "./data/questions";
 import { results } from "./data/results";
 import {
   calculateResult,
+  QUIZ_LENGTH,
   newSession,
   parseResult,
   resultHash,
@@ -230,7 +231,7 @@ export default function App({
   const next = () => {
     if (!session || !session.answers[session.questionIds[session.index]])
       return;
-    if (session.index < 19) {
+    if (session.index < QUIZ_LENGTH - 1) {
       save({ ...session, index: session.index + 1 });
       scrollTop();
     } else {
@@ -260,7 +261,11 @@ export default function App({
       )
         return;
       const n = Number(event.key);
-      if (n >= 1 && n <= 4) {
+      if (
+        n >= 1 &&
+        Number.isInteger(n) &&
+        n <= session.answerOrders[session.index].length
+      ) {
         event.preventDefault();
         const id = session.answerOrders[session.index][n - 1];
         const next = {
@@ -360,10 +365,13 @@ export default function App({
           <div className="quiz-content">
             <div className="progress-label">
               <span>
-                Питання <strong>{session.index + 1}</strong> із 20
+                Питання <strong>{session.index + 1}</strong> із {QUIZ_LENGTH}
               </span>
               <span>
-                {Math.round((Object.keys(session.answers).length / 20) * 100)}%
+                {Math.round(
+                  (Object.keys(session.answers).length / QUIZ_LENGTH) * 100,
+                )}
+                %
               </span>
             </div>
             <div
@@ -372,10 +380,12 @@ export default function App({
               aria-label="Прогрес тесту"
               aria-valuenow={Object.keys(session.answers).length}
               aria-valuemin={0}
-              aria-valuemax={20}
+              aria-valuemax={QUIZ_LENGTH}
             >
               <span
-                style={{ width: `${Object.keys(session.answers).length * 5}%` }}
+                style={{
+                  width: `${(Object.keys(session.answers).length / QUIZ_LENGTH) * 100}%`,
+                }}
               />
             </div>
             <div className="question-block" key={current.id}>
@@ -423,13 +433,15 @@ export default function App({
               >
                 <Icon name="back" /> Назад
               </button>
-              <span className="keyboard-tip">Можна обирати клавішами 1–4</span>
+              <span className="keyboard-tip">
+                Можна обирати клавішами 1–{current.answers.length}
+              </span>
               <button
                 className="button primary"
                 disabled={!answer}
                 onClick={next}
               >
-                {session.index === 19 ? "Мій результат" : "Далі"}
+                {session.index === QUIZ_LENGTH - 1 ? "Мій результат" : "Далі"}
                 <Icon name="arrow" />
               </button>
             </div>

@@ -99,7 +99,7 @@ export async function resultImage(
   }
   ctx.fillStyle = info.ink;
   ctx.font = "800 33px Manrope Variable, sans-serif";
-  ctx.fillText("А ти хто? Пройди 20 запитань →", 72, h - (story ? 145 : 75));
+  ctx.fillText("А ти хто? Пройди 15 запитань →", 72, h - (story ? 145 : 75));
   const url = import.meta.env?.VITE_SITE_URL;
   if (url) {
     ctx.font = "600 24px Manrope Variable, sans-serif";

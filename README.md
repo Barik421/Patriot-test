@@ -32,9 +32,9 @@ With no site URL the build deliberately emits `noindex` and a disallowing robots
 
 ## Content and scoring
 
-[Review all 120 questions and answer options](docs/questions-review.md).
+[Review all 60 questions and answer options](docs/questions-review.md).
 
-`src/data/questions.ts` contains 120 original questions, each with four answers. Each answer has an explicit score vector and a stable ID, independent of its mixed editorial position and randomized display position. See [editorial principles](docs/editorial-principles.md) for the distinction between constructive criticism and automatic negativity. Archetype score vectors are:
+`src/data/questions.ts` contains 60 questions from editorial edition 5, each with two to four answers. Each answer has an explicit score vector and a stable ID, independent of its mixed editorial position and randomized display position. See [editorial principles](docs/editorial-principles.md) for the distinction between constructive criticism and automatic negativity. Archetype score vectors are:
 
 | Archetype      | Patriot | Almost patriot | Almost zrada | Zrada |
 | -------------- | ------- | -------------- | ------------ | ----- |
@@ -43,13 +43,13 @@ With no site URL the build deliberately emits `noindex` and a disallowing robots
 | Almost zrada   | 0       | 1              | 6            | 2     |
 | Zrada          | 0       | 1              | 2            | 6     |
 
-Each row totals 9. Fisher–Yates chooses 20 unique questions and separately shuffles the answer IDs. The largest category total wins. Ties deterministically prefer the inner archetypes in this order: almost patriot, almost zrada, patriot, zrada. Affinity percentage is `round(winning total / (20 × 6) × 100)`, **not probability or an actual measure of patriotism**. A stable hash of question/answer IDs selects one of ten descriptions per category. No scores appear during the quiz.
+Each row totals 9. Fisher–Yates chooses 15 unique questions and separately shuffles the answer IDs. The largest category total wins. Ties deterministically prefer the inner archetypes in this order: almost patriot, almost zrada, patriot, zrada. Affinity percentage is `round(winning total / maximum available for that category in the drawn questions × 100)`, **not probability or an actual measure of patriotism**. A stable hash of question/answer IDs selects one of ten descriptions per category. No scores appear during the quiz.
 
 `src/lib/quiz.ts` is pure and tested. Add question objects to expand the bank (update the content-count test and editorial copy when the bank size changes). Result palettes, emojis and 40 original descriptions are in `src/data/results.ts`. Run `npm run questions:review` after content edits to regenerate the full review list. Revision 2 invalidates old sessions because answer IDs now follow mixed editorial positions.
 
 ## Navigation, persistence and sharing
 
-An unfinished session stores the selected question IDs, answer display order, answers and current index under `patriot:session`. Saved data is validated against the current database. Back navigation preserves answers; changing an answer replaces its contribution. Completion requires all 20 answers. Start again creates a fresh random draw. No scores or answers are transmitted.
+An unfinished session stores the selected question IDs, answer display order, answers and current index under `patriot:session`. Saved data is validated against the current database. Back navigation preserves answers; changing an answer replaces its contribution. Completion requires all 15 answers. Start again creates a fresh random draw. No scores or answers are transmitted.
 
 Themes follow the OS on the first visit; manual choice is saved locally. Storage failures do not break the running quiz. Results use validated hash URLs such as `#result=patriot&p=80&v=2`, so direct links work on GitHub Pages without server routing. Links are editable entertainment artifacts, not authenticated certificates. Browser back/forward is supported. An invalid hash opens the homepage.
 
@@ -81,7 +81,7 @@ Review your real GA property retention settings and hosting privacy details befo
 
 ## Accessibility and validation
 
-Native buttons, visible focus, skip link, semantic headings, labeled progress and formats, live status messages and an accessible modal. Answer keys 1–4 supplement normal Tab/Enter/Space navigation. Reduced-motion disables animations/effects; no flashing. Results remain readable without decorative effects. Both themes use dedicated surface, border and text colors.
+Native buttons, visible focus, skip link, semantic headings, labeled progress and formats, live status messages and an accessible modal. Number keys for the available answers supplement normal Tab/Enter/Space navigation. Reduced-motion disables animations/effects; no flashing. Results remain readable without decorative effects. Both themes use dedicated surface, border and text colors.
 
 `npm test` runs 32 checks covering all content, weights, 250 randomized sessions, persistence validation, all categories, ties, answer changes, result URL validation, sharing fallbacks, storage denial, and consent/withdrawal. Browser QA should also cover a full mobile run, refresh/back navigation, all palettes and themes, both PNG sizes, native share/clipboard fallback and reduced motion. Native share and actual GA delivery depend on real device support/configuration and should be verified on target devices.
 
