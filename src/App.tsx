@@ -141,7 +141,7 @@ export default function App({
       view === "result" && result
         ? `${results[result.category].name} — Тест на патріота`
         : view === "how"
-          ? "Як працює тест на патріота — правила, результати й поширення"
+          ? "Як працює тест на патріота — запитання й результати"
           : originalTitle;
     let robots = document.querySelector<HTMLMetaElement>('meta[name="robots"]');
     if (
@@ -530,8 +530,8 @@ export default function App({
               aria-label="Поділитися результатом"
             >
               <div>
-                <h2>Це має побачити твій чат.</h2>
-                <p>Збережи собі. Скинь друзям. Сперечайтесь із любов’ю.</p>
+                <h2>Збережи свій результат.</h2>
+                <p>Обери формат картки, якщо хочеш залишити її собі.</p>
               </div>
               <div className="share-form">
                 <fieldset className="format-picker">

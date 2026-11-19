@@ -297,7 +297,6 @@ export function Home({
       </section>
       <section className="how-section shell" id="how-preview">
         <div className="how-intro">
-          <span className="eyebrow muted">БЕЗ ІСПИТІВ І КОНСПЕКТІВ</span>
           <h2>
             П’ять хвилин.
             <br />І все про тебе.
@@ -305,7 +304,7 @@ export function Home({
           <p>
             Тут не питають дати битв. Тут питають,
             <br />
-            що ти думаєш, коли знову розкопали дорогу.
+            що ти думаєш, коли знову перекладають бруківку.
           </p>
           <button className="text-button" onClick={onStart}>
             Ну все, я готовий <Icon name="arrow" />
@@ -335,10 +334,9 @@ export function Home({
           <li>
             <span>03</span>
             <div>
-              <h3>Відправ у чат. Почни дискусію.</h3>
+              <h3>Впізнай себе у відповідях</h3>
               <p>
-                Збережи картку для сторіз або скинь посилання друзям. Хай теж
-                перевірять себе.
+                Прочитай опис свого типажу й порівняй його з тим, як бачиш себе.
               </p>
             </div>
           </li>

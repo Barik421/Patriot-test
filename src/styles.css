@@ -2262,8 +2262,8 @@ h2 {
 }
 .how-scoring {
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 70px;
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 760px;
   align-items: center;
 }
 .how-scoring > div > p {

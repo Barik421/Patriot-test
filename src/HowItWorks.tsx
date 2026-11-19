@@ -19,9 +19,6 @@ export function HowItWorks({
       </button>
       <section className="how-page-hero">
         <div>
-          <span className="eyebrow muted">
-            ВІД ПЕРШОГО «НУ ТАКЕ» ДО ВЕРДИКТУ
-          </span>
           <h1 ref={headingRef} tabIndex={-1}>
             Як це
             <br />
@@ -38,10 +35,11 @@ export function HowItWorks({
         <div className="how-page-note">
           <span aria-hidden="true">🧐</span>
           <strong>
-            П’ять хвилин.
-            <br />І ще пів години
+            15 запитань.
             <br />
-            обговорень у чаті.
+            Твої реакції.
+            <br />
+            Твій результат.
           </strong>
           <p>
             Без реєстрації. Без підготовки.
@@ -74,11 +72,10 @@ export function HowItWorks({
           </li>
           <li>
             <span>03</span>
-            <h3>Скинь друзям</h3>
+            <h3>Поглянь на свої відповіді</h3>
             <p>
-              Завантаж PNG для сторіз або квадратної публікації. Натисни
-              «Поділитися» чи скопіюй посилання — друзі побачать твій результат
-              без проходження тесту.
+              Прочитай опис свого типажу. Подумай, які реакції впізнаєш у собі,
+              а з чим не погоджуєшся.
             </p>
           </li>
         </ol>
@@ -104,15 +101,6 @@ export function HowItWorks({
             «Недопатріот», далі «Недозрадойоб», потім «Патріот» і «Зрадойоб».
           </p>
         </div>
-        <aside className="how-example">
-          <span aria-hidden="true">💬</span>
-          <h3>«Покажіть кошторис» — цілком патріотична відповідь.</h3>
-          <p>
-            Критика влади, вимога звітності та недовіра до красивих обіцянок
-            самі по собі не додають «зради». Має значення реакція: розібратися й
-            діяти чи заздалегідь знецінити будь-який результат.
-          </p>
-        </aside>
       </section>
       <section className="how-page-section" aria-labelledby="how-types-title">
         <span className="eyebrow muted">ЧОТИРИ ЗНАЙОМІ ГОЛОСИ В ГОЛОВІ</span>
@@ -164,13 +152,6 @@ export function HowItWorks({
             проходження дає новий випадковий набір.
           </p>
         </div>
-      </section>
-      <section className="how-page-cta">
-        <span className="eyebrow muted">ТЕОРІЮ ЗАКІНЧИЛИ</span>
-        <h2>А тепер — як би вчинив ти?</h2>
-        <button className="button primary" onClick={onStart}>
-          Пройти тест <Icon name="arrow" />
-        </button>
       </section>
     </main>
   );
