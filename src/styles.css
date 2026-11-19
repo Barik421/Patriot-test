@@ -2516,3 +2516,39 @@ h2 {
   text-underline-offset: 3px;
   overflow-wrap: anywhere;
 }
+
+@media (max-width: 360px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .hero-copy {
+    min-width: 0;
+  }
+  .hero h1 {
+    font-size: 45px;
+  }
+  .hero-art {
+    width: 100%;
+    height: 330px;
+  }
+  .mood-card {
+    width: 44%;
+    height: 215px;
+    padding: 12px;
+  }
+  .mood-face {
+    font-size: 60px;
+  }
+  .mood-caption {
+    font-size: 18px;
+  }
+  .art-orbit {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    transform: none;
+  }
+  .orbit-two {
+    width: 80%;
+  }
+}
