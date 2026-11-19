@@ -16,7 +16,7 @@ export interface Question {
   text: string;
   answers: Answer[];
 }
-const SESSION_VERSION = 3;
+const SESSION_VERSION = 4;
 export interface Session {
   version: typeof SESSION_VERSION;
   id: string;

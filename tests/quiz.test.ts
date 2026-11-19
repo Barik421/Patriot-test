@@ -24,7 +24,7 @@ describe("editorial database", () => {
       expect(leaders.size).toBe(4);
     }
     expect(
-      validSession({ ...newSession(questions), version: 2 }, questions),
+      validSession({ ...newSession(questions), version: 3 }, questions),
     ).toBe(false);
   });
   it("treats anti-corruption scrutiny as constructive", () => {
@@ -33,15 +33,15 @@ describe("editorial database", () => {
       expect(q.answers.some((a) => a.weights[0] === 6)).toBe(true);
     }
   });
-  it("has 60 unique questions and 182 answers, with two to four distinct answers each", () => {
-    expect(questions).toHaveLength(60);
-    expect(new Set(questions.map((q) => q.id)).size).toBe(60);
-    expect(new Set(questions.map((q) => q.text)).size).toBe(60);
+  it("has 40 unique questions and 118 answers, with two or three distinct answers each", () => {
+    expect(questions).toHaveLength(40);
+    expect(new Set(questions.map((q) => q.id)).size).toBe(40);
+    expect(new Set(questions.map((q) => q.text)).size).toBe(40);
     expect(questions.reduce((total, q) => total + q.answers.length, 0)).toBe(
-      182,
+      118,
     );
     expect(new Set(questions.map((q) => q.answers.length))).toEqual(
-      new Set([2, 3, 4]),
+      new Set([2, 3]),
     );
     for (const q of questions) {
       expect(new Set(q.answers.map((a) => a.text)).size).toBe(q.answers.length);
@@ -124,7 +124,7 @@ describe("weighted scoring", () => {
     ].slice(0, QUIZ_LENGTH);
     const s = newSession(bank);
     expect(new Set(s.answerOrders.map((a) => a.length))).toEqual(
-      new Set([2, 3, 4]),
+      new Set([2, 3]),
     );
     const i = s.answerOrders.findIndex((a) => a.length === 2);
     const malformed = structuredClone(s);

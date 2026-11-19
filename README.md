@@ -32,9 +32,9 @@ With no site URL the build deliberately emits `noindex` and a disallowing robots
 
 ## Content and scoring
 
-[Review all 60 questions and answer options](docs/questions-review.md).
+[Review all 40 questions and answer options](docs/questions-review.md).
 
-`src/data/questions.ts` contains 60 questions from editorial edition 5, each with two to four answers. Each answer has an explicit score vector and a stable ID, independent of its mixed editorial position and randomized display position. See [editorial principles](docs/editorial-principles.md) for the distinction between constructive criticism and automatic negativity. Archetype score vectors are:
+`src/data/questions.ts` contains 40 questions from editorial edition 8, each with two or three answers. Each answer has an explicit score vector and a stable ID, independent of its mixed editorial position and randomized display position. See [editorial principles](docs/editorial-principles.md) for the distinction between constructive criticism and automatic negativity. Archetype score vectors are:
 
 | Archetype      | Patriot | Almost patriot | Almost zrada | Zrada |
 | -------------- | ------- | -------------- | ------------ | ----- |
