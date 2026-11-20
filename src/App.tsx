@@ -445,10 +445,6 @@ export default function App({
                 <Icon name="arrow" />
               </button>
             </div>
-            <p className="quiz-bottom-note">
-              <Icon name="check" size={15} /> Відповідь можна змінити.
-              Самоіронію — теж.
-            </p>
           </div>
         </main>
       )}
