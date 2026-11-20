@@ -145,8 +145,7 @@ export function Home({
       <section className="hero shell">
         <div className="hero-copy">
           <div className="eyebrow">
-            <span className="live-dot" /> ТЕСТ ДЛЯ СИЛЬНИХ ЛЮДЕЙ
-            СИЛЬНОЇ КРАЇНИ
+            <span className="live-dot" /> ТЕСТ ДЛЯ СИЛЬНИХ ЛЮДЕЙ СИЛЬНОЇ КРАЇНИ
           </div>
           <h1>
             Патріот
@@ -326,8 +325,7 @@ export function Home({
             <div>
               <h3>Дізнайся свій внутрішній стан</h3>
               <p>
-                Ми змішаємо трохи математики й багато самоіронії. Отримаєш один
-                із чотирьох типажів.
+                За 15 відповідями визначимо твій типаж і місце на шкалі зради.
               </p>
             </div>
           </li>
