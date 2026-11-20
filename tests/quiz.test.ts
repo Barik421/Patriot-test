@@ -24,7 +24,7 @@ describe("editorial database", () => {
       expect(leaders.size).toBe(4);
     }
     expect(
-      validSession({ ...newSession(questions), version: 3 }, questions),
+      validSession({ ...newSession(questions), version: 4 }, questions),
     ).toBe(false);
   });
   it("treats anti-corruption scrutiny as constructive", () => {
