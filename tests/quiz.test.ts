@@ -92,31 +92,60 @@ describe("randomization and restoration", () => {
     expect(validSession(null, questions)).toBe(false);
   });
 });
-describe("weighted scoring", () => {
+describe("normalized scoring", () => {
   it.each(categories)(
-    "can produce %s regardless of display order",
+    "produces %s for its closest answers across 100 different draws",
     (category) => {
       const i = categories.indexOf(category);
-      const bank = [...questions]
-        .sort(
-          (a, b) =>
-            Math.max(...b.answers.map((a) => a.weights[i])) -
-            Math.max(...a.answers.map((a) => a.weights[i])),
-        )
-        .slice(0, QUIZ_LENGTH);
-      const s = newSession(bank);
-      for (const q of bank) {
-        s.answers[q.id] = q.answers.reduce((best, a) =>
-          a.weights[i] > best.weights[i] ? a : best,
-        ).id;
+      let seed = 12345;
+      const rng = () => {
+        seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+        return seed / 4294967296;
+      };
+      for (let draw = 0; draw < 100; draw++) {
+        const bank = shuffle(questions, rng).slice(0, QUIZ_LENGTH);
+        const s = newSession(bank);
+        for (const q of bank) {
+          s.answers[q.id] = q.answers.reduce((best, a) =>
+            a.weights[i] > best.weights[i] ? a : best,
+          ).id;
+        }
+        const result = calculateResult(s, bank);
+        expect(result.category).toBe(category);
+        expect(result.percent).toBe(100);
+        s.answerOrders.forEach((order) => order.reverse());
+        expect(calculateResult(s, bank)).toEqual(result);
       }
-      const result = calculateResult(s, bank);
-      expect(result.category).toBe(category);
-      expect(result.percent).toBe(100);
-      s.answerOrders.forEach((order) => order.reverse());
-      expect(calculateResult(s, bank)).toEqual(result);
     },
   );
+  it("does not let 62/90 patriot points beat 58/58 almost-patriot points", () => {
+    const bank = [
+      ...questions
+        .filter((q) => q.answers.some((a) => a.weights[1] === 6))
+        .slice(0, 7),
+      ...questions
+        .filter((q) => q.answers.every((a) => a.weights[1] !== 6))
+        .slice(0, 8),
+    ];
+    const s = newSession(bank);
+    for (const q of bank) {
+      s.answers[q.id] = q.answers.reduce((best, a) =>
+        a.weights[1] > best.weights[1] ? a : best,
+      ).id;
+    }
+    const totals = bank.reduce(
+      (sum, q) => {
+        const a = q.answers.find((a) => a.id === s.answers[q.id])!;
+        return [sum[0] + a.weights[0], sum[1] + a.weights[1]];
+      },
+      [0, 0],
+    );
+    expect(totals).toEqual([62, 58]);
+    expect(calculateResult(s, bank)).toMatchObject({
+      category: "almost-patriot",
+      percent: 100,
+    });
+  });
   it("restores mixed answer counts and recalculates after editing an earlier answer", () => {
     const bank = questions.slice(0, QUIZ_LENGTH).map((q, i) => ({
       ...q,
@@ -159,7 +188,8 @@ describe("weighted scoring", () => {
       ...q,
       answers: [
         { id: "tie", text: "Tie", weights: [4, 4, 1, 0] as const },
-        ...q.answers,
+        { id: "p", text: "P", weights: [6, 0, 3, 0] as const },
+        { id: "ap", text: "AP", weights: [0, 6, 0, 3] as const },
       ],
     }));
     const session = newSession(bank);
@@ -167,6 +197,23 @@ describe("weighted scoring", () => {
       session.answers[q.id] = "tie";
     });
     expect(calculateResult(session, bank).category).toBe("almost-patriot");
+  });
+  it("handles a category with no available points", () => {
+    const bank = questions.slice(0, QUIZ_LENGTH).map((q) => ({
+      ...q,
+      answers: [
+        { id: "p", text: "P", weights: [6, 3, 0, 0] as const },
+        { id: "ap", text: "AP", weights: [0, 6, 3, 0] as const },
+      ],
+    }));
+    const s = newSession(bank);
+    bank.forEach((q) => {
+      s.answers[q.id] = "p";
+    });
+    expect(calculateResult(s, bank)).toMatchObject({
+      category: "patriot",
+      percent: 100,
+    });
   });
 });
 describe("backend-free result links", () => {

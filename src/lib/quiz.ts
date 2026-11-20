@@ -111,14 +111,20 @@ export function calculateResult(session: Session, bank: Question[]): Result {
     for (const char of id + answer.id)
       hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
   }
-  // Stable ties prefer the inner, less absolute archetypes: almost-patriot, almost-zrada, patriot, zrada.
+  // Compare affinity, not raw points: three-answer questions omit an archetype,
+  // so each category has a different attainable maximum in the drawn questions.
+  // Cross-multiplication preserves exact ties without rounding the percentages.
+  // Stable ties prefer the inner archetypes: almost-patriot, almost-zrada, patriot, zrada.
   const winner = [1, 2, 0, 3].reduce(
-    (best, i) => (totals[i] > totals[best] ? i : best),
+    (best, i) =>
+      totals[i] * (maximums[best] || 1) > totals[best] * (maximums[i] || 1)
+        ? i
+        : best,
     1,
   );
   return {
     category: categories[winner],
-    percent: Math.round((totals[winner] / maximums[winner]) * 100),
+    percent: Math.round((totals[winner] / (maximums[winner] || 1)) * 100),
     variant: hash % 10,
   };
 }
