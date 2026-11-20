@@ -34,16 +34,20 @@ With no site URL the build deliberately emits `noindex` and a disallowing robots
 
 [Review all 40 questions and answer options](docs/questions-review.md).
 
-`src/data/questions.ts` contains 40 questions from editorial edition 8, each with three answers; the engine supports variable answer counts. Each answer has an explicit score vector and a stable ID, independent of its mixed editorial position and randomized display position. See [editorial principles](docs/editorial-principles.md) for the distinction between constructive criticism and automatic negativity. Archetype score vectors are:
+`src/data/questions.ts` contains 40 questions from editorial edition 8, each with three answers; the engine supports variable answer counts. Every answer has a stable ID and an explicit score on one fixed reaction scale:
 
-| Archetype      | Patriot | Almost patriot | Almost zrada | Zrada |
-| -------------- | ------- | -------------- | ------------ | ----- |
-| Patriot        | 6       | 2              | 1            | 0     |
-| Almost patriot | 2       | 6              | 1            | 0     |
-| Almost zrada   | 0       | 1              | 6            | 2     |
-| Zrada          | 0       | 1              | 2            | 6     |
+| Score | Editorial meaning |
+| --- | --- |
+| 0 | Constructive / patriotic reaction |
+| 1 | Pragmatic reaction |
+| 2 | Pessimistic reaction |
+| 3 | Total dismissal |
 
-Each row totals 9. Fisher–Yates chooses 15 unique questions and separately shuffles the answer IDs. The largest **normalized affinity** wins: `category total / maximum available for that category in the drawn questions`. Three-answer questions omit an archetype, so comparing raw totals unfairly favored categories with more high-scoring options. Ratios are compared by cross-multiplication before rounding; ties deterministically prefer the inner archetypes in this order: almost patriot, almost zrada, patriot, zrada. The displayed affinity percentage is `round(winning affinity × 100)`, **not probability or an actual measure of patriotism**. A stable hash of question/answer IDs selects one of ten descriptions per category. No scores appear during the quiz. Existing result links retain the result encoded in their URL; a fresh completed quiz uses the corrected scoring.
+Fisher–Yates chooses 15 unique questions and separately shuffles the answer IDs. Add the scores of the selected answers; the scale is always 0–45. Classify the **unrounded total** using fixed bands: 0–11 patriot, 12–22 almost patriot, 23–33 almost zrada, 34–45 zrada. There are no category-specific denominators, per-draw normalization, audience quotas or random result assignments. Changing an unselected alternative cannot change the result. Display `round(total / 45 × 100)` as a **position on the zrada scale**, with 0% at the patriotic end and 100% at the dismissive end, not as affinity or probability. These are editorial entertainment rules, not a validated psychological instrument.
+
+[Review all 120 answer scores and the reasoning for 21 corrected assignments](docs/scoring-review.md). Accountability, fact-checking and constructive criticism are not automatically scored as pessimism or total dismissal. A stable hash of question/answer IDs selects one of ten descriptions per category. No scores appear during the quiz.
+
+New result URLs include `score=<0..45>`; the parser verifies that category and percentage agree with that total. Historical links without `score` retain their encoded result and legacy affinity caption. Existing unfinished sessions can continue because question and answer IDs and texts are unchanged.
 
 `src/lib/quiz.ts` is pure and tested. Add question objects to expand the bank (update the content-count test and editorial copy when the bank size changes). Result palettes, emojis and 40 original descriptions are in `src/data/results.ts`. Run `npm run questions:review` after content edits to regenerate the full review list. Revision 2 invalidates old sessions because answer IDs now follow mixed editorial positions.
 
@@ -83,7 +87,7 @@ Review your real GA property retention settings and hosting privacy details befo
 
 Native buttons, visible focus, skip link, semantic headings, labeled progress and formats, live status messages and an accessible modal. Number keys for the available answers supplement normal Tab/Enter/Space navigation. Reduced-motion disables animations/effects; no flashing. Results remain readable without decorative effects. Both themes use dedicated surface, border and text colors.
 
-`npm test` runs 32 checks covering all content, weights, 250 randomized sessions, persistence validation, all categories, ties, answer changes, result URL validation, sharing fallbacks, storage denial, and consent/withdrawal. Browser QA should also cover a full mobile run, refresh/back navigation, all palettes and themes, both PNG sizes, native share/clipboard fallback and reduced motion. Native share and actual GA delivery depend on real device support/configuration and should be verified on target devices.
+`npm test` covers the answer scores, 250 randomized sessions, fixed score boundaries, explicit mixed-reaction scenarios, monotonicity, independence from unselected alternatives, answer changes, persistence validation, current and historical result links, sharing fallbacks, storage denial, and consent/withdrawal. Browser QA should also cover a full mobile run, refresh/back navigation, all palettes and themes, both PNG sizes, native share/clipboard fallback and reduced motion. Native share and actual GA delivery depend on real device support/configuration and should be verified on target devices.
 
 ## Tag Manager
 

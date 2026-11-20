@@ -5,11 +5,11 @@ export const categories = [
   "zrada",
 ] as const;
 export type Category = (typeof categories)[number];
-export type Weights = readonly [number, number, number, number];
+export type AnswerScore = 0 | 1 | 2 | 3;
 export interface Answer {
   id: string;
   text: string;
-  weights: Weights;
+  score: AnswerScore;
 }
 export interface Question {
   id: string;
@@ -29,8 +29,19 @@ export interface Result {
   category: Category;
   percent: number;
   variant: number;
+  // Present for the fixed scale. Older shared results keep their legacy affinity.
+  score?: number;
 }
 export const QUIZ_LENGTH = 15;
+export const QUIZ_MAX_SCORE = QUIZ_LENGTH * 3;
+
+function summarizeScore(score: number) {
+  return {
+    // Four fixed bands; determine the category before rounding for display.
+    category: categories[Math.min(3, Math.floor((score * 4) / QUIZ_MAX_SCORE))],
+    percent: Math.round((score / QUIZ_MAX_SCORE) * 100),
+  };
+}
 export function shuffle<T>(items: readonly T[], rng = Math.random): T[] {
   const copy = [...items];
   for (let i = copy.length - 1; i > 0; i--) {
@@ -98,38 +109,23 @@ export function calculateResult(session: Session, bank: Question[]): Result {
     session.questionIds.some((id) => !session.answers[id])
   )
     throw new Error("Incomplete quiz");
-  const totals = [0, 0, 0, 0];
-  const maximums = [0, 0, 0, 0];
+  let score = 0;
   let hash = 0;
   for (const id of session.questionIds) {
     const question = bank.find((q) => q.id === id)!;
     const answer = question.answers.find((a) => a.id === session.answers[id])!;
-    answer.weights.forEach((w, i) => {
-      totals[i] += w;
-      maximums[i] += Math.max(...question.answers.map((a) => a.weights[i]));
-    });
+    score += answer.score;
     for (const char of id + answer.id)
       hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
   }
-  // Compare affinity, not raw points: three-answer questions omit an archetype,
-  // so each category has a different attainable maximum in the drawn questions.
-  // Cross-multiplication preserves exact ties without rounding the percentages.
-  // Stable ties prefer the inner archetypes: almost-patriot, almost-zrada, patriot, zrada.
-  const winner = [1, 2, 0, 3].reduce(
-    (best, i) =>
-      totals[i] * (maximums[best] || 1) > totals[best] * (maximums[i] || 1)
-        ? i
-        : best,
-    1,
-  );
   return {
-    category: categories[winner],
-    percent: Math.round((totals[winner] / (maximums[winner] || 1)) * 100),
+    ...summarizeScore(score),
+    score,
     variant: hash % 10,
   };
 }
 export function resultHash(r: Result): string {
-  return `#result=${r.category}&p=${r.percent}&v=${r.variant}`;
+  return `#result=${r.category}&p=${r.percent}&v=${r.variant}${r.score === undefined ? "" : `&score=${r.score}`}`;
 }
 export function parseResult(hash: string): Result | null {
   const p = new URLSearchParams(hash.replace(/^#/, ""));
@@ -145,9 +141,23 @@ export function parseResult(hash: string): Result | null {
     !/^\d$/.test(variant)
   )
     return null;
-  return {
+  const result: Result = {
     category: category as Category,
     percent: Number(percent),
     variant: Number(variant),
   };
+  const rawScore = p.get("score");
+  if (rawScore !== null) {
+    if (!/^(0|[1-9]\d?)$/.test(rawScore)) return null;
+    const score = Number(rawScore);
+    if (score > QUIZ_MAX_SCORE) return null;
+    const expected = summarizeScore(score);
+    if (
+      expected.category !== result.category ||
+      expected.percent !== result.percent
+    )
+      return null;
+    result.score = score;
+  }
+  return result;
 }

@@ -6,6 +6,7 @@ import {
   categories,
   newSession,
   QUIZ_LENGTH,
+  QUIZ_MAX_SCORE,
   parseResult,
   resultHash,
   shuffle,
@@ -17,8 +18,8 @@ describe("editorial database", () => {
     for (let position = 0; position < 3; position++) {
       const leaders = new Set(
         questions.flatMap((q) => {
-          const weights = q.answers[position]?.weights;
-          return weights ? [weights.indexOf(Math.max(...weights))] : [];
+          const answer = q.answers[position];
+          return answer ? [answer.score] : [];
         }),
       );
       expect(leaders.size).toBe(4);
@@ -30,7 +31,7 @@ describe("editorial database", () => {
   it("treats anti-corruption scrutiny as constructive", () => {
     for (const id of ["q003", "q014", "q016", "q025"]) {
       const q = questions.find((q) => q.id === id)!;
-      expect(q.answers.some((a) => a.weights[0] === 6)).toBe(true);
+      expect(q.answers.some((a) => a.score === 0)).toBe(true);
     }
   });
   it("has 40 unique questions and 120 answers, with three distinct answers each", () => {
@@ -47,11 +48,7 @@ describe("editorial database", () => {
       expect(new Set(q.answers.map((a) => a.text)).size).toBe(q.answers.length);
       expect(new Set(q.answers.map((a) => a.id)).size).toBe(q.answers.length);
       for (const a of q.answers) {
-        expect(a.weights).toHaveLength(4);
-        expect(
-          a.weights.every((w) => Number.isInteger(w) && w >= 0 && w <= 6),
-        ).toBe(true);
-        expect(a.weights.reduce((a, b) => a + b, 0)).toBe(9);
+        expect([0, 1, 2, 3]).toContain(a.score);
       }
     }
   });
@@ -92,127 +89,185 @@ describe("randomization and restoration", () => {
     expect(validSession(null, questions)).toBe(false);
   });
 });
-describe("normalized scoring", () => {
-  it.each(categories)(
-    "produces %s for its closest answers across 100 different draws",
-    (category) => {
-      const i = categories.indexOf(category);
-      let seed = 12345;
-      const rng = () => {
-        seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
-        return seed / 4294967296;
-      };
-      for (let draw = 0; draw < 100; draw++) {
-        const bank = shuffle(questions, rng).slice(0, QUIZ_LENGTH);
+function scaleFixture(scores: number[]) {
+  expect(scores).toHaveLength(QUIZ_LENGTH);
+  const bank = questions.slice(0, QUIZ_LENGTH).map((q) => ({
+    ...q,
+    answers: ([0, 1, 2, 3] as const).map((score) => ({
+      id: `s${score}`,
+      text: `Reaction ${score}`,
+      score,
+    })),
+  }));
+  const session = newSession(bank);
+  bank.forEach((q, i) => {
+    session.answers[q.id] = `s${scores[i]}`;
+  });
+  return { bank, session, result: calculateResult(session, bank) };
+}
+function scoresTotaling(total: number) {
+  return Array.from({ length: QUIZ_LENGTH }, () => {
+    const score = Math.min(3, total);
+    total -= score;
+    return score;
+  });
+}
+describe("fixed reaction scale", () => {
+  it.each([
+    [0, "patriot", 0],
+    [1, "almost-patriot", 33],
+    [2, "almost-zrada", 67],
+    [3, "zrada", 100],
+  ] as const)(
+    "maps consistent level %i reactions to %s",
+    (score, category, percent) => {
+      expect(scaleFixture(Array(QUIZ_LENGTH).fill(score)).result).toMatchObject(
+        {
+          category,
+          percent,
+          score: score * QUIZ_LENGTH,
+        },
+      );
+    },
+  );
+  it.each([
+    [11, "patriot", 24],
+    [12, "almost-patriot", 27],
+    [22, "almost-patriot", 49],
+    [23, "almost-zrada", 51],
+    [33, "almost-zrada", 73],
+    [34, "zrada", 76],
+  ] as const)(
+    "classifies boundary score %i as %s before display rounding",
+    (score, category, percent) => {
+      expect(scaleFixture(scoresTotaling(score)).result).toMatchObject({
+        score,
+        category,
+        percent,
+      });
+    },
+  );
+  it.each([
+    [12, 3, "patriot", 20],
+    [10, 5, "almost-patriot", 33],
+    [7, 8, "almost-zrada", 53],
+    [3, 12, "zrada", 80],
+  ] as const)(
+    "maps %i constructive and %i dismissive reactions to %s",
+    (positive, negative, category, percent) => {
+      expect(
+        scaleFixture([...Array(positive).fill(0), ...Array(negative).fill(3)])
+          .result,
+      ).toMatchObject({ category, percent });
+    },
+  );
+  it.each([
+    ["q004", "a2"],
+    ["q042", "a1"],
+    ["q044", "a1"],
+    ["q039", "a1"],
+  ])(
+    "does not score accountability or fact-checking as zrada: %s/%s",
+    (qid, aid) => {
+      expect(
+        questions.find((q) => q.id === qid)!.answers.find((a) => a.id === aid)!
+          .score,
+      ).toBe(0);
+    },
+  );
+  it.each([
+    ["q007", "a1"],
+    ["q012", "a1"],
+    ["q057", "a2"],
+    ["q023", "a2"],
+  ])("retains a high score for explicit total dismissal: %s/%s", (qid, aid) => {
+    expect(
+      questions.find((q) => q.id === qid)!.answers.find((a) => a.id === aid)!
+        .score,
+    ).toBe(3);
+  });
+  it("keeps both extremes attainable across 100 real question draws", () => {
+    let seed = 12345;
+    const rng = () => {
+      seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+      return seed / 4294967296;
+    };
+    for (let draw = 0; draw < 100; draw++) {
+      const bank = shuffle(questions, rng).slice(0, QUIZ_LENGTH);
+      for (const extreme of ["minimum", "maximum"] as const) {
         const s = newSession(bank);
         for (const q of bank) {
           s.answers[q.id] = q.answers.reduce((best, a) =>
-            a.weights[i] > best.weights[i] ? a : best,
+            (
+              extreme === "minimum"
+                ? a.score < best.score
+                : a.score > best.score
+            )
+              ? a
+              : best,
           ).id;
         }
         const result = calculateResult(s, bank);
-        expect(result.category).toBe(category);
-        expect(result.percent).toBe(100);
+        expect(result.category).toBe(
+          extreme === "minimum" ? "patriot" : "zrada",
+        );
         s.answerOrders.forEach((order) => order.reverse());
         expect(calculateResult(s, bank)).toEqual(result);
       }
-    },
-  );
-  it("does not let 62/90 patriot points beat 58/58 almost-patriot points", () => {
-    const bank = [
-      ...questions
-        .filter((q) => q.answers.some((a) => a.weights[1] === 6))
-        .slice(0, 7),
-      ...questions
-        .filter((q) => q.answers.every((a) => a.weights[1] !== 6))
-        .slice(0, 8),
-    ];
-    const s = newSession(bank);
-    for (const q of bank) {
-      s.answers[q.id] = q.answers.reduce((best, a) =>
-        a.weights[1] > best.weights[1] ? a : best,
-      ).id;
     }
-    const totals = bank.reduce(
-      (sum, q) => {
-        const a = q.answers.find((a) => a.id === s.answers[q.id])!;
-        return [sum[0] + a.weights[0], sum[1] + a.weights[1]];
-      },
-      [0, 0],
-    );
-    expect(totals).toEqual([62, 58]);
-    expect(calculateResult(s, bank)).toMatchObject({
-      category: "almost-patriot",
-      percent: 100,
-    });
   });
-  it("restores mixed answer counts and recalculates after editing an earlier answer", () => {
-    const bank = questions.slice(0, QUIZ_LENGTH).map((q, i) => ({
+  it("never lowers zrada when selected scores increase", () => {
+    let previousPercent = -1,
+      previousCategory = -1;
+    for (let total = 0; total <= QUIZ_MAX_SCORE; total++) {
+      const r = scaleFixture(scoresTotaling(total)).result;
+      expect(r.percent).toBeGreaterThanOrEqual(previousPercent);
+      expect(categories.indexOf(r.category)).toBeGreaterThanOrEqual(
+        previousCategory,
+      );
+      previousPercent = r.percent;
+      previousCategory = categories.indexOf(r.category);
+    }
+  });
+  it("ignores the scores and number of unselected alternatives", () => {
+    const { bank, session, result } = scaleFixture(Array(QUIZ_LENGTH).fill(1));
+    const altered = bank.map((q) => ({
       ...q,
-      answers: i === 0 ? q.answers.slice(0, 2) : q.answers,
+      answers: q.answers
+        .filter((a) => a.id !== "s3")
+        .map((a) => (a.id === "s1" ? a : { ...a, score: 0 as const })),
     }));
-    const s = newSession(bank);
-    expect(new Set(s.answerOrders.map((a) => a.length))).toEqual(
-      new Set([2, 3]),
+    const restored = {
+      ...session,
+      answerOrders: session.questionIds.map((id) =>
+        altered.find((q) => q.id === id)!.answers.map((a) => a.id),
+      ),
+    };
+    expect(validSession(restored, altered)).toBe(true);
+    expect(calculateResult(restored, altered)).toEqual(result);
+  });
+  it("restores mixed answer counts and replaces an earlier answer's contribution", () => {
+    const { bank, session } = scaleFixture(Array(QUIZ_LENGTH).fill(0));
+    bank[0].answers = bank[0].answers.filter(
+      (a) => a.id === "s0" || a.id === "s3",
     );
-    const i = s.answerOrders.findIndex((a) => a.length === 2);
-    const malformed = structuredClone(s);
-    malformed.answerOrders[i].push("a3");
+    session.answerOrders = session.questionIds.map((id) =>
+      bank.find((q) => q.id === id)!.answers.map((a) => a.id),
+    );
+    const malformed = structuredClone(session);
+    malformed.answerOrders[session.questionIds.indexOf(bank[0].id)].push("s9");
     expect(validSession(malformed, bank)).toBe(false);
-    bank.forEach((q) => {
-      s.answers[q.id] = q.answers[0].id;
-    });
-    s.index = i;
-    s.answers[s.questionIds[i]] = s.answerOrders[i].find(
-      (id) => id !== s.answers[s.questionIds[i]],
-    )!;
-    const restored = JSON.parse(JSON.stringify(s));
+    session.answers[bank[0].id] = "s3";
+    const restored = JSON.parse(JSON.stringify(session));
     expect(validSession(restored, bank)).toBe(true);
-    const result = calculateResult(restored, bank);
-    const winner = categories.indexOf(result.category);
-    const points = bank.reduce(
-      (total, q) =>
-        total +
-        q.answers.find((a) => a.id === s.answers[q.id])!.weights[winner],
-      0,
-    );
-    const available = bank.reduce(
-      (total, q) =>
-        total + Math.max(...q.answers.map((a) => a.weights[winner])),
-      0,
-    );
-    expect(result.percent).toBe(Math.round((100 * points) / available));
-  });
-  it("keeps the deterministic tie preference", () => {
-    const bank = questions.slice(0, QUIZ_LENGTH).map((q) => ({
-      ...q,
-      answers: [
-        { id: "tie", text: "Tie", weights: [4, 4, 1, 0] as const },
-        { id: "p", text: "P", weights: [6, 0, 3, 0] as const },
-        { id: "ap", text: "AP", weights: [0, 6, 0, 3] as const },
-      ],
-    }));
-    const session = newSession(bank);
-    bank.forEach((q) => {
-      session.answers[q.id] = "tie";
+    expect(calculateResult(restored, bank)).toMatchObject({
+      score: 3,
+      percent: 7,
     });
-    expect(calculateResult(session, bank).category).toBe("almost-patriot");
-  });
-  it("handles a category with no available points", () => {
-    const bank = questions.slice(0, QUIZ_LENGTH).map((q) => ({
-      ...q,
-      answers: [
-        { id: "p", text: "P", weights: [6, 3, 0, 0] as const },
-        { id: "ap", text: "AP", weights: [0, 6, 3, 0] as const },
-      ],
-    }));
-    const s = newSession(bank);
-    bank.forEach((q) => {
-      s.answers[q.id] = "p";
-    });
-    expect(calculateResult(s, bank)).toMatchObject({
-      category: "patriot",
-      percent: 100,
+    restored.answers[bank[0].id] = "s0";
+    expect(calculateResult(restored, bank)).toMatchObject({
+      score: 0,
+      percent: 0,
     });
   });
 });
@@ -221,6 +276,24 @@ describe("backend-free result links", () => {
     const r = { category, percent: 67, variant: 9 };
     expect(parseResult(resultHash(r))).toEqual(r);
   });
+  it.each([0, 11, 12, 22, 23, 33, 34, 45])(
+    "round trips scale score %i",
+    (score) => {
+      const r = scaleFixture(scoresTotaling(score)).result;
+      expect(parseResult(resultHash(r))).toEqual(r);
+    },
+  );
+  it.each([
+    "#result=patriot&p=0&v=0&score=-1",
+    "#result=zrada&p=100&v=0&score=46",
+    "#result=patriot&p=0&v=0&score=1.5",
+    "#result=patriot&p=0&v=0&score=",
+    "#result=patriot&p=0&v=0&score=15",
+    "#result=patriot&p=33&v=0&score=15",
+    "#result=almost-patriot&p=34&v=0&score=15",
+  ])("rejects malformed or inconsistent scale result: %s", (hash) =>
+    expect(parseResult(hash)).toBeNull(),
+  );
   it.each([
     "",
     "#quiz",

@@ -89,11 +89,13 @@ export async function resultImage(
   ctx.font = `800 ${story ? 88 : 63}px Manrope Variable, sans-serif`;
   ctx.fillText(`${result.percent}%`, 105, panelY + (story ? 112 : 83));
   ctx.font = "600 26px Manrope Variable, sans-serif";
+  const scoreLabel =
+    result.score === undefined ? "збіг із типажем" : "на шкалі зради";
   if (story) {
-    ctx.fillText("збіг із типажем", 105, panelY + 168);
+    ctx.fillText(scoreLabel, 105, panelY + 168);
     ctx.fillText(info.slogan, 105, panelY + 225);
   } else {
-    ctx.fillText("збіг із типажем", 350, panelY + 58);
+    ctx.fillText(scoreLabel, 350, panelY + 58);
     ctx.font = "500 22px Manrope Variable, sans-serif";
     ctx.fillText(info.slogan, 350, panelY + 94);
   }

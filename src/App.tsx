@@ -518,7 +518,11 @@ export default function App({
               </p>
               <div className="score-pill">
                 <strong>{result.percent}%</strong>
-                <span>збіг із типажем</span>
+                <span>
+                  {result.score === undefined
+                    ? "збіг із типажем"
+                    : "на шкалі зради"}
+                </span>
               </div>
             </div>
             <section
