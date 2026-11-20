@@ -145,7 +145,7 @@ export function Home({
       <section className="hero shell">
         <div className="hero-copy">
           <div className="eyebrow">
-            <span className="live-dot" /> НЕЗАЛЕЖНИЙ ТЕСТ ДЛЯ СИЛЬНИХ ЛЮДЕЙ
+            <span className="live-dot" /> ТЕСТ ДЛЯ СИЛЬНИХ ЛЮДЕЙ
             СИЛЬНОЇ КРАЇНИ
           </div>
           <h1>
